@@ -25,15 +25,18 @@ public class CfTaskLauncherSinkApplication {
 	private final DelegatingResourceLoader resourceLoader;
 	private final String awsAccessKey;
 	private final String awsSecretKey;
+	private final String taskResource;
 
 	public CfTaskLauncherSinkApplication(TaskLauncher taskLauncher,
 			DelegatingResourceLoader resourceLoader,
-			@Value("${AWS_ACCESS_KEY}") String awsAccessKey,
-			@Value("${AWS_SECRET_KEY}") String awsSecretKey) {
+			@Value("${cloud.aws.credentials.accessKey}") String awsAccessKey,
+			@Value("${cloud.aws.credentials.secretKey}") String awsSecretKey,
+			@Value("${task.resource}") String taskResource) {
 		this.taskLauncher = taskLauncher;
 		this.resourceLoader = resourceLoader;
 		this.awsAccessKey = awsAccessKey;
 		this.awsSecretKey = awsSecretKey;
+		this.taskResource = taskResource;
 	}
 
 	@StreamListener(Sink.INPUT)
@@ -41,8 +44,7 @@ public class CfTaskLauncherSinkApplication {
 		System.out.println(message);
 		String fileName = Paths.get(message.getPayload()).getFileName().toString();
 		System.out.println(fileName);
-		TaskLaunchRequest taskLaunchRequest = new TaskLaunchRequest(
-				"https://github.com/making-demo-scdf/index-import-task/releases/download/1.0.0-dev0/index-import-task-1.0.0-dev0.jar",
+		TaskLaunchRequest taskLaunchRequest = new TaskLaunchRequest(taskResource,
 				Arrays.asList("fileName=" + fileName, "--AWS_ACCESS_KEY=" + awsAccessKey,
 						"--AWS_SECRET_KEY=" + awsSecretKey),
 				null, null);
