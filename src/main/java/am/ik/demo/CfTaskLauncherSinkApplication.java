@@ -41,21 +41,21 @@ public class CfTaskLauncherSinkApplication {
 
 	@StreamListener(Sink.INPUT)
 	public void deploy(Message<String> message) {
-		System.out.println(message);
+		System.out.println("message=" + message);
 		String fileName = Paths.get(message.getPayload()).getFileName().toString();
-		System.out.println(fileName);
 		TaskLaunchRequest taskLaunchRequest = new TaskLaunchRequest(taskResource,
 				Arrays.asList("fileName=" + fileName, "--AWS_ACCESS_KEY=" + awsAccessKey,
 						"--AWS_SECRET_KEY=" + awsSecretKey),
 				null, null);
-		System.out.println(taskLaunchRequest);
 		Resource resource = resourceLoader.getResource(taskLaunchRequest.getUri());
 		AppDefinition definition = new AppDefinition(
-				resource.getFilename() + "-" + fileName,
+				Paths.get(taskLaunchRequest.getUri()).getFileName().toString(),
 				taskLaunchRequest.getEnvironmentProperties());
+		System.out.println("definition=" + definition);
 		AppDeploymentRequest request = new AppDeploymentRequest(definition, resource,
 				taskLaunchRequest.getDeploymentProperties(),
 				taskLaunchRequest.getCommandlineArguments());
+		System.out.println("request=" + request);
 		this.taskLauncher.launch(request);
 	}
 
