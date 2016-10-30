@@ -51,7 +51,7 @@ public class CfTaskLauncherSinkApplication {
 		System.out.println(taskLaunchRequest);
 		Resource resource = resourceLoader.getResource(taskLaunchRequest.getUri());
 		AppDefinition definition = new AppDefinition(
-				"Task-" + taskLaunchRequest.hashCode(),
+				resource.getFilename() + "-" + fileName,
 				taskLaunchRequest.getEnvironmentProperties());
 		AppDeploymentRequest request = new AppDeploymentRequest(definition, resource,
 				taskLaunchRequest.getDeploymentProperties(),
